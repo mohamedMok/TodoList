@@ -3,6 +3,9 @@ package fr.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -32,4 +35,23 @@ public class TaskDAO {
 		return listTasks;
 	}
 	
+	public boolean deleteTask(String id){
+		BasicDBObject deleteQuery = new BasicDBObject();
+		deleteQuery.put("_id", new ObjectId(id));
+		DBObject item = collection.findOne(deleteQuery);
+		collection.remove(item);
+		return true;
+	}
+	
+	public Task getTaskById(String id){
+		BasicDBObject query = new BasicDBObject();
+		query.put("_id",new ObjectId(id));
+		DBObject item = collection.findOne(query);
+		Task t = new Task();
+		t.setTitle(item.get("title").toString());
+		t.setBody(item.get("body").toString());
+		t.setDone(Boolean.getBoolean(item.get("done").toString()));
+		t.setId(item.get("_id").toString());
+		return t;
+	}
 }
