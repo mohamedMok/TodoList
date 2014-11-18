@@ -48,7 +48,7 @@ public class TasksResource {
 	public Response getTaskById(@PathParam(value="id") String id){
 		Task t = dao.getTaskById(id);
 		if(t == null)
-			return Response.status(400).entity("Les paramètres entrés sont incorrects (id inexistant ?)").build();
+			return Response.status(404).entity("Ressource not avalaible").build();
 		else
 			return Response.ok().entity(t).build();
 	}
@@ -81,7 +81,7 @@ public class TasksResource {
 			t.setId(id);
 			int nb = dao.update(t);
 			if(nb == 1){
-				return Response.ok().build();
+				return Response.noContent().build();
 				
 			}else
 				return Response.status(404).build();
@@ -123,7 +123,6 @@ public class TasksResource {
 	
 	@DELETE
 	@Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteTask(@PathParam(value="id") String id){
 		Task t = dao.getTaskById(id);
 		if(t == null){
@@ -131,7 +130,7 @@ public class TasksResource {
 		}
 		int nbRes = dao.deleteTask(id);
         if(nbRes < 1 ){
-                return Response.status(400).entity("Unable to delete User").build();
+                return Response.status(400).entity("Unable to delete task").build();
         }else{
                 return Response.ok().build();
         }
