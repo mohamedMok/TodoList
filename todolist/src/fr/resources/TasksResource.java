@@ -17,8 +17,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.twilio.sdk.TwilioRestException;
+
 import fr.dao.TaskDAO;
 import fr.model.Task;
+import fr.services.TwilioService;
 
 /**
  * 
@@ -28,8 +31,8 @@ import fr.model.Task;
 @Path("/tasks")
 public class TasksResource {
 	private TaskDAO dao = new TaskDAO();
-	public static final String ACCOUNT_SID = "ACa04d1761ad71fab47b792b767e96cf12"; 
-	public static final String AUTH_TOKEN = "8537a05571350cb0aeb078a85a09ac4b"; 
+	private TwilioService twilio = new TwilioService();
+
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -98,24 +101,13 @@ public class TasksResource {
 			t.setId(id);
 			int nb = dao.updateDone(t);
 			if(nb == 1){
-				/*try {
-				if(t.isDone()){
-					TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
-					 
-				    // Build a filter for the MessageList
-				    List<NameValuePair> params = new ArrayList<NameValuePair>();
-				    params.add(new BasicNameValuePair("Body", "Send something"));
-				    params.add(new BasicNameValuePair("To", "+33618432802"));
-				    params.add(new BasicNameValuePair("From", "33975189329"));
-				    
-				    MessageFactory messageFactory = client.getAccount().getMessageFactory();
-				    messageFactory.create(params);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}*/
+				try {
+					if(t.isDone())
+						this.twilio.SendSMS(t);
+				} catch (TwilioRestException e) {
+					e.printStackTrace();
+				}
 				return Response.ok().build();
-				
 			}else
 				return Response.status(404).build();
 		}
