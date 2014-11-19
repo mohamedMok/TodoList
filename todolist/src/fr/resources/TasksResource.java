@@ -12,6 +12,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -21,6 +22,7 @@ import com.twilio.sdk.TwilioRestException;
 
 import fr.dao.TaskDAO;
 import fr.model.Task;
+import fr.services.SearchlyService;
 import fr.services.TwilioService;
 
 /**
@@ -32,7 +34,7 @@ import fr.services.TwilioService;
 public class TasksResource {
 	private TaskDAO dao = new TaskDAO();
 	private TwilioService twilio = new TwilioService();
-
+	private SearchlyService searchly = new SearchlyService();
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -54,6 +56,14 @@ public class TasksResource {
 			return Response.status(404).entity("Ressource not avalaible").build();
 		else
 			return Response.ok().entity(t).build();
+	}
+	
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response searchTasks(@QueryParam(value="query") String query) throws Exception
+	{
+	    return Response.ok().entity(this.searchly.search(query)).build();
 	}
 	
 	@POST
