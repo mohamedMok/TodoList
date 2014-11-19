@@ -1,8 +1,5 @@
 package fr.dao;
 
-import fr.connection.DBConnection;
-import fr.model.Task;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,12 +11,18 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
+import fr.connection.DBConnection;
+import fr.model.Task;
+import fr.services.SearchlyService;
+
 public class TaskDAO {
 	DBCollection collection;
+	SearchlyService search;
 
 	public TaskDAO() {
 		this.collection = DBConnection.getInstance().getDB()
 				.getCollection("TASKS");
+		search = new SearchlyService();
 	}
 
 	public List<Task> getAllTasks() {
@@ -41,10 +44,11 @@ public class TaskDAO {
 		BasicDBObject deleteQuery = new BasicDBObject();
 		deleteQuery.put("_id", new ObjectId(id));
 		WriteResult res = this.collection.remove(deleteQuery);
+		this.search.removeFromIndex(id);
 		return res.getN();
 	}
 
-	public String create(Task t) {
+	public String create(Task t){
 		BasicDBObject newTask = new BasicDBObject();
 		newTask.put("title", t.getTitle());
 		newTask.put("body", t.getBody());
@@ -52,7 +56,13 @@ public class TaskDAO {
 
 		WriteResult res = this.collection.insert(newTask);
 		ObjectId id = (ObjectId) newTask.get("_id");
-
+		try {
+			search.addDocumentToIndex(t);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return ((Double) res.getField("ok")).intValue() == 1 ? id.toString()
 				: null;
 	}
@@ -83,12 +93,10 @@ public class TaskDAO {
 
 	public int updateDone(Task t) {
 		BasicDBObject searchQuery = new BasicDBObject().append("_id",new ObjectId(t.getId()));
-
 		BasicDBObject setQuery = new BasicDBObject();
 		setQuery.put("done", t.isDone());
 		BasicDBObject set = new BasicDBObject("$set", setQuery);
 		WriteResult res = this.collection.update(searchQuery, set);
 		return res.getN();
 	}
-
 }
