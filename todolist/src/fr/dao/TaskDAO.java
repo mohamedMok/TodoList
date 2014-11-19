@@ -64,7 +64,7 @@ public class TaskDAO {
 		Task t = new Task();
 		t.setTitle(item.get("title").toString());
 		t.setBody(item.get("body").toString());
-		t.setDone(Boolean.getBoolean(item.get("done").toString()));
+		t.setDone(Boolean.parseBoolean(item.get("done").toString()));
 		t.setId(item.get("_id").toString());
 		return t;
 	}
