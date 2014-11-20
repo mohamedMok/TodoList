@@ -69,12 +69,12 @@ BTW we need to change the value of properties of twilio account into properties/
 --(ACCOUNT_SID, AUTH_TOKEN, FromNumber, ToNumber)--
 
 ### Delete Task 
-A task can be deleted with `DELETE` HTTP method.                                                        
+A task can be deleted with `DELETE` HTTP method.                                                                                
 **URI** : '/todolist/tasks/id/`
 
 ### Search 
-We can search tasks with `GET` HTTP method. Titles and bodies will be searched and the results will be ranked by pertinence.
-**URI** : '/todolist/tasks?query="something"`                                                                     
+We can search tasks with `GET` HTTP method. Titles and bodies will be searched and the results will be ranked by pertinence.    
+**URI** : '/todolist/tasks?query="something"`                                                                                   
 Output expected : all tasks contains the query string.                                                              
 
 
