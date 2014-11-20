@@ -37,17 +37,6 @@ public class TasksResource {
 	private SearchlyService searchly = new SearchlyService();
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getTasks(){
-		List<Task> tasks = dao.getAllTasks();
-		if(tasks.isEmpty()){
-			return Response.status(404).build();
-		}else{
-			return Response.ok().entity(tasks).build();
-		}
-	}
-	
-	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTaskById(@PathParam(value="id") String id){
@@ -59,11 +48,19 @@ public class TasksResource {
 	}
 	
 	@GET
-	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchTasks(@QueryParam(value="query") String query) throws Exception
 	{
-	    return Response.ok().entity(this.searchly.search(query)).build();
+		if("".equals(query) || query == null){
+			List<Task> tasks = dao.getAllTasks();
+			if(tasks.isEmpty()){
+				return Response.status(404).build();
+			}else{
+				return Response.ok().entity(tasks).build();
+			}
+		}else{
+			return Response.ok().entity(this.searchly.search(query)).build();
+		}
 	}
 	
 	@POST
